@@ -53,21 +53,27 @@ def deploy(node, app, version):
     subprocess.call(command)
 
 
-def start(node, app):
+def start(node, app, version):
     event = "%s-start" % app
     payload = "node=%s" % node
     command = ['serf', 'event', event, payload]
     subprocess.call(command)
+    tag = "%s=%s,started"
+    command = ['serf', 'tags', '-set', tag]
+    subprocess.call(command)
 
 
-def stop(node, app):
+def stop(node, app, version):
     event = "%s-stop" % app
     payload = "node=%s" % node
     command = ['serf', 'event', event, payload]
     subprocess.call(command)
+    tag = "%s=%s,started"
+    command = ['serf', 'tags', '-set', tag]
+    subprcess.call(command)
 
 
-def restart(node, app):
+def restart(node, app, version):
     event = "%s-restart" % app
     payload = "node=%s" % node
     command = ['serf', 'event', event, payload]
@@ -375,13 +381,15 @@ class StartHandler(tornado.web.RequestHandler):
     def get(self):
         node = self.get_argument('node')
         app = self.get_argument('app')
-        start(node, app)
+        version = self.get_argument('version')
+        start(node, app, version)
         self.redirect('/')
 
     def post(self):
         node = self.get_argument('node')
         app = self.get_argument('app')
-        start(node, app)
+        version = self.get_argument('version')
+        start(node, app, version)
         self.write({'status': 'ok'})
 
 
@@ -389,13 +397,15 @@ class StopHandler(tornado.web.RequestHandler):
     def get(self):
         node = self.get_argument('node')
         app = self.get_argument('app')
-        stop(node, app)
+        version = self.get_argument('version')
+        stop(node, app, version)
         self.redirect('/')
 
     def post(self):
         node = self.get_argument('node')
         app = self.get_argument('app')
-        stop(node, app)
+        version = self.get_argument('version')
+        stop(node, app, version)
         self.write({'status': 'ok'})
 
 
@@ -403,13 +413,15 @@ class RestartHandler(tornado.web.RequestHandler):
     def get(self):
         node = self.get_argument('node')
         app = self.get_argument('app')
-        restart(node, app)
+        version = self.get_argument('version')
+        restart(node, app, version)
         self.redirect('/')
 
     def post(self):
         node = self.get_argument('node')
         app = self.get_argument('app')
-        restart(node, app)
+        version = self.get_argument('version')
+        restart(node, app, version)
         self.write({'status': 'ok'})
 
 
